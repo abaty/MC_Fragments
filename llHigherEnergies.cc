@@ -51,13 +51,13 @@ int main(int argc, char *argv[]) {
   pythia.readString("HiggsSM:ffbar2HZ = on");
 
   //beam intialization (11 for electrons, 13 for muons)
-  //pythia.readString("Beams:idA =  11");
-  //pythia.readString("Beams:idB = -11");
+  pythia.readString("Beams:idA =  11");
+  pythia.readString("Beams:idB = -11");
   //pythia.readString("Beams:idA =  13");
   //pythia.readString("Beams:idB = -13");
   
   //center of mass energy (should be >Z mass for this setup, use a different setup for Z pole events to force hadronic decays)
-  //pythia.settings.parm("Beams:eCM", 163.0);//WW
+  pythia.settings.parm("Beams:eCM", 163.0);//WW
   //pythia.settings.parm("Beams:eCM", 240.0);//ZHiggs
   //pythia.settings.parm("Beams:eCM", 365.0);//ttbar
   //pythia.settings.parm("Beams:eCM", 3000.0);//muon scenario 1

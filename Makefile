@@ -191,6 +191,15 @@ else
         $(error Error: $@ requires ROOT and FASTJET3)
 endif
 
+llHigherEnergies: $(PYTHIA) $$@.cc
+ifeq ($(ROOT_USE)$(FASTJET3_USE),truetrue)
+	$(CXX) $@.cc -o $@ -w $(CXX_COMMON) $(FASTJET3_INCLUDE)\
+	 $(FASTJET3_LIB) $(ROOT_LIB) $(shell $(ROOT_CONFIG) --cflags --glibs)
+else
+        $(error Error: $@ requires ROOT and FASTJET3)
+endif
+
+
 DIS: $(PYTHIA) $$@.cc
 ifeq ($(ROOT_USE)$(FASTJET3_USE),truetrue)
 	$(CXX) $@.cc -o $@ -w $(CXX_COMMON) $(FASTJET3_INCLUDE)\

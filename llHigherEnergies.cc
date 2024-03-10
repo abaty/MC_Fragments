@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 //get input job number (used for labeling outputs in batch submission if needed)
   if(argc != 2)
   {
-    std::cout << "Usage: ./LEP1 <job number>" << std::endl;
+    std::cout << "Usage: ./llHigherEnergies <job number>" << std::endl;
     return 1;
   }  
   int jobNumber = std::atoi(argv[1]);
@@ -46,15 +46,22 @@ int main(int argc, char *argv[]) {
   //pythia.readString("PDF:lepton = off");
   // Process selection.
   pythia.readString("WeakSingleBoson:ffbar2gmZ = on");
-  // Switch off all Z0 decays and then switch back on those to quarks.
-  pythia.readString("23:onMode = off");
-  pythia.readString("23:onIfAny = 1 2 3 4 5 6");
+  pythia.readString("WeakDoubleBoson:ffbar2gmZgmZ = on");
+  pythia.readString("WeakDoubleBoson:ffbar2WW = on");
+  pythia.readString("HiggsSM:ffbar2HZ = on");
 
-  // LEP1 initialization at Z0 mass.
-  pythia.readString("Beams:idA =  11");
-  pythia.readString("Beams:idB = -11");
-  double mZ = pythia.particleData.m0(23);
-  pythia.settings.parm("Beams:eCM", mZ);
+  //beam intialization (11 for electrons, 13 for muons)
+  //pythia.readString("Beams:idA =  11");
+  //pythia.readString("Beams:idB = -11");
+  //pythia.readString("Beams:idA =  13");
+  //pythia.readString("Beams:idB = -13");
+  
+  //center of mass energy (should be >Z mass for this setup, use a different setup for Z pole events to force hadronic decays)
+  //pythia.settings.parm("Beams:eCM", 163.0);//WW
+  //pythia.settings.parm("Beams:eCM", 240.0);//ZHiggs
+  //pythia.settings.parm("Beams:eCM", 365.0);//ttbar
+  //pythia.settings.parm("Beams:eCM", 3000.0);//muon scenario 1
+  //pythia.settings.parm("Beams:eCM", 10000.0);//muon scenario 2
 
   //Set the RNG seed to be based on the system clock (seed = 0 means use clock)
   //Should be set to another value if you want reproducable MC events
@@ -92,7 +99,7 @@ int main(int argc, char *argv[]) {
   std::vector< std::vector<float> > gendau_eta;
   std::vector< std::vector<float> > gendau_phi;
 
-  TFile * f = TFile::Open(Form("LEP1_%d.root",jobNumber),"recreate");
+  TFile * f = TFile::Open(Form("llHigherEnergies_%d.root",jobNumber),"recreate");
   TTree * trackTree = new TTree("trackTree","v1");
  
   trackTree->Branch("NchHadrons",&NchHadrons);
@@ -129,7 +136,7 @@ int main(int argc, char *argv[]) {
 
   //******************************************** ANALYZER ********************************************************
   // Begin event loop.
-  int nEvent = 100;
+  int nEvent = 10000;
   for (int iEvent = 0; iEvent < nEvent; ++iEvent) {
     if( iEvent%1000 == 0 ) std::cout << iEvent << std::endl;
     if (!pythia.next()) continue;

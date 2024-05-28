@@ -8,6 +8,7 @@
 #include "TFile.h"
 #include "TSystem.h"
 #include "TInterpreter.h"
+#include "TH1D.h"
 
 //standard cpp libraries
 #include <vector>
@@ -69,6 +70,7 @@ int main(int argc, char *argv[]) {
   clock_t now = clock();
 
   //basic stuff
+  TH1D * sigmaGenmb = new TH1D("sigmaGenmb","sigmaGenmb",1,0,2);
   float NchHadrons;  
   float weight;
   int processCode;
@@ -129,11 +131,11 @@ int main(int argc, char *argv[]) {
 
   //******************************************** ANALYZER ********************************************************
   // Begin event loop.
-  int nEvent = 100;
+  int nEvent = 1000;
   for (int iEvent = 0; iEvent < nEvent; ++iEvent) {
     if( iEvent%1000 == 0 ) std::cout << iEvent << std::endl;
     if (!pythia.next()) continue;
-    
+
     //dumping basic particle info
     for (int i = 0; i < pythia.event.size(); ++i)
       if (pythia.event[i].isFinal()){
@@ -240,6 +242,9 @@ int main(int argc, char *argv[]) {
   pythia.stat();
   std::cout << ((float)(clock() - now))/CLOCKS_PER_SEC << " seconds" << std::endl;
 
+  sigmaGenmb->Fill(1,pythia.info.sigmaGen());
+  sigmaGenmb->SetBinError(1,pythia.info.sigmaErr());
+  sigmaGenmb->Write();
   trackTree->Write();
   f->Close();
   return 0;

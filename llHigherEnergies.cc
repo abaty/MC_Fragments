@@ -8,6 +8,7 @@
 #include "TFile.h"
 #include "TSystem.h"
 #include "TInterpreter.h"
+#include "TH1D.h"
 
 //standard cpp libraries
 #include <vector>
@@ -51,17 +52,17 @@ int main(int argc, char *argv[]) {
   pythia.readString("HiggsSM:ffbar2HZ = on");
 
   //beam intialization (11 for electrons, 13 for muons)
-  pythia.readString("Beams:idA =  11");
-  pythia.readString("Beams:idB = -11");
-  //pythia.readString("Beams:idA =  13");
-  //pythia.readString("Beams:idB = -13");
+  //pythia.readString("Beams:idA =  11");
+  //pythia.readString("Beams:idB = -11");
+  pythia.readString("Beams:idA =  13");
+  pythia.readString("Beams:idB = -13");
   
   //center of mass energy (should be >Z mass for this setup, use a different setup for Z pole events to force hadronic decays)
-  pythia.settings.parm("Beams:eCM", 163.0);//WW
+  //pythia.settings.parm("Beams:eCM", 163.0);//WW
   //pythia.settings.parm("Beams:eCM", 240.0);//ZHiggs
   //pythia.settings.parm("Beams:eCM", 365.0);//ttbar
   //pythia.settings.parm("Beams:eCM", 3000.0);//muon scenario 1
-  //pythia.settings.parm("Beams:eCM", 10000.0);//muon scenario 2
+  pythia.settings.parm("Beams:eCM", 10000.0);//muon scenario 2
 
   //Set the RNG seed to be based on the system clock (seed = 0 means use clock)
   //Should be set to another value if you want reproducable MC events
@@ -76,6 +77,7 @@ int main(int argc, char *argv[]) {
   clock_t now = clock();
 
   //basic stuff
+  TH1D * sigmaGenmb = new TH1D("sigmaGenmb","sigmaGenmb",1,0,2);
   float NchHadrons;  
   float weight;
   int processCode;
@@ -136,7 +138,7 @@ int main(int argc, char *argv[]) {
 
   //******************************************** ANALYZER ********************************************************
   // Begin event loop.
-  int nEvent = 10000;
+  int nEvent = 100000;
   for (int iEvent = 0; iEvent < nEvent; ++iEvent) {
     if( iEvent%1000 == 0 ) std::cout << iEvent << std::endl;
     if (!pythia.next()) continue;
@@ -244,6 +246,9 @@ int main(int argc, char *argv[]) {
   }
 
   //end of job stuff
+  sigmaGenmb->Fill(1,pythia.info.sigmaGen());
+  sigmaGenmb->SetBinError(1,pythia.info.sigmaErr());
+  sigmaGenmb->Write();
   pythia.stat();
   std::cout << ((float)(clock() - now))/CLOCKS_PER_SEC << " seconds" << std::endl;
 

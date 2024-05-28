@@ -8,6 +8,7 @@
 #include "TFile.h"
 #include "TSystem.h"
 #include "TInterpreter.h"
+#include "TH1D.h"
 
 //standard cpp libraries
 #include <vector>
@@ -153,6 +154,7 @@ int main(int argc, char *argv[]) {
   clock_t now = clock();
 
   //basic stuff
+  TH1D * sigmaGenmb = new TH1D("sigmaGenmb","sigmaGenmb",1,0,2);
   float NchHadrons;  
   float weight;
   int processCode;
@@ -334,6 +336,9 @@ int main(int argc, char *argv[]) {
   }
 
   //end of job stuff
+  sigmaGenmb->Fill(1,pythia.info.sigmaGen());
+  sigmaGenmb->SetBinError(1,pythia.info.sigmaErr());
+  sigmaGenmb->Write();
   pythia.stat();
   std::cout << ((float)(clock() - now))/CLOCKS_PER_SEC << " seconds" << std::endl;
 
